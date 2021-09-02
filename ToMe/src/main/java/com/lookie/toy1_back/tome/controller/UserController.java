@@ -1,65 +1,74 @@
 package com.lookie.toy1_back.tome.controller;
 
+import com.lookie.toy1_back.tome.assembler.UserModelAssembler;
 import com.lookie.toy1_back.tome.domain.User;
 import com.lookie.toy1_back.tome.exception.UserNotFoundException;
-import com.lookie.toy1_back.tome.request.UserCreationRequest;
-import com.lookie.toy1_back.tome.service.UserService;
-import lombok.RequiredArgsConstructor;
+import com.lookie.toy1_back.tome.repository.UserRepository;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
-
+import java.util.stream.Collectors;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @RestController
-@RequestMapping(value = "/user")
-@RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
+    private final UserRepository repository;
+    private final UserModelAssembler assembler;
 
-    //사용자 리스트 리턴
+    UserController(UserRepository repository, UserModelAssembler assembler){
+        this.repository = repository;
+        this.assembler = assembler;
+    }
+
     @GetMapping("/users")
-    public List<User> returnUsers(){
-        return userService.findAll();
+    public CollectionModel<EntityModel<User>> all(){
+        List<EntityModel<User>> users = repository.findAll().stream()
+                .map(assembler::toModel)
+                .collect(Collectors.toList());
+        return CollectionModel.of(users, linkTo(methodOn(UserController.class).all()).withSelfRel());
     }
 
-    //사용자 한명 리턴
-    @GetMapping("/users/{id}")
-    public User returnUser(@PathVariable Long id){
-        User user = userService.findOne(id);
-        //존재하지 않는 사용자 예외처리
-        if (user == null){
-            throw new UserNotFoundException(String.format("ID[%s] not found",id));
-        }
-        return user;
-    }
-    //새로운 사용자 등록
     @PostMapping("/users")
-    public ResponseEntity<User> createUser (@RequestBody User user) {
-        User savedUser = userService.save(user);
-
-        // 사용자에게 요청 값을 변환해주기
-        // fromCurrentRequest() :현재 요청되어진 request값을 사용한다는 뜻
-        // path : 반환 시켜줄 값
-        // savedUser.getId() : {id} 가변변수에 새롭게 만들어진 id값 저장
-        // toUri() : URI 형태로 변환
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedUser.getId())
-                .toUri();
-        return ResponseEntity.created(location).build();
+    ResponseEntity<?> newUser(@RequestBody User newUser){
+        EntityModel<User> entityModel = assembler.toModel(repository.save(newUser));
+        return ResponseEntity
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(entityModel);
     }
 
-    //사용자 삭제
+    @GetMapping("/users/{id}")
+    public EntityModel<User> one(@PathVariable Long id){
+        User user = repository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+        return assembler.toModel(user);
+    }
+
+    @PutMapping("/users/{id}")
+    ResponseEntity<?> replaceUser(@RequestBody User newUser, @PathVariable Long id){
+        User updatedUser = repository.findById(id)
+                .map(user -> {
+                    user.setUsername(newUser.getUsername());
+                    user.setRole(newUser.getRole());
+                    return repository.save(user);
+                })
+                .orElseGet(() -> {
+                    newUser.setId(id);
+                    return repository.save(newUser);
+                });
+        EntityModel<User> entityModel = assembler.toModel(updatedUser);
+
+        return ResponseEntity
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(entityModel);
+    }
+
     @DeleteMapping("/users/{id}")
-    public void delete(@PathVariable Long id){
-        User user = userService.delete(id);
-        if (user==null){
-            throw new UserNotFoundException(String.format("ID[%s] not found",id));
-        }
+    ResponseEntity<?> deleteUser(@PathVariable Long id){
+        repository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
 

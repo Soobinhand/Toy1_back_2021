@@ -5,6 +5,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
+import java.util.Observable;
 
 @Getter
 @Setter
@@ -14,23 +16,45 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Data
 @Builder
-public class User implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class User {
 
-    @Column
+    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     private String name;
-
-    @Column
     private String phone;
-
-    @Column
     private String username;
-
-    @Column
-    @JsonIgnore
     private String password;
+    private String role;
+
+
+    public User(String name, String phone, String username, String password, String role){
+        this.name = name;
+        this.phone = phone;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+    @Override
+    public boolean equals(Object o){
+        if (this == o){
+            return true;
+        }
+        if (!(o instanceof User)){
+            return false;
+        }
+        User user = (User) o;
+        return Objects.equals(this.id, user.id) &&
+                Objects.equals(this.name, user.name) &&
+                Objects.equals(this.phone, user.phone) &&
+                Objects.equals(this.username, user.username) &&
+                Objects.equals(this.password, user.password);
+
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(this.id, this.name, this.phone,
+                this.username, this.password);
+    }
 
 
 }
