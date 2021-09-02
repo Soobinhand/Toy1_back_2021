@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @JsonFormat(shape = JsonFormat.Shape.STRING)
 @Getter
 @RequiredArgsConstructor
-public enum Role {
+public enum UserRole {
     USER("ROLE_USER"),
     ADMIN("ROLE_ADMIN");
 

@@ -1,13 +1,10 @@
 package com.lookie.toy1_back.tome.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.lookie.toy1_back.tome.role.Role;
+import com.lookie.toy1_back.tome.role.UserRole;
 import lombok.*;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Objects;
-import java.util.Observable;
 
 @Getter
 @Setter
@@ -26,15 +23,15 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private UserRole userRole;
 
     @Builder
-    public User(String name, String phone, String username, String password, Role role){
+    public User(String name, String phone, String username, String password, UserRole userRole){
         this.name = name;
         this.phone = phone;
         this.username = username;
         this.password = password;
-        this.role = role;
+        this.userRole = userRole;
     }
 
 

@@ -4,7 +4,7 @@ import com.lookie.toy1_back.tome.assembler.UserModelAssembler;
 import com.lookie.toy1_back.tome.domain.User;
 import com.lookie.toy1_back.tome.exception.UserNotFoundException;
 import com.lookie.toy1_back.tome.repository.UserRepository;
-import com.lookie.toy1_back.tome.role.Role;
+import com.lookie.toy1_back.tome.role.UserRole;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -34,7 +34,7 @@ public class UserController {
 
     @PostMapping("/users")
     ResponseEntity<?> newUser(@RequestBody User newUser){
-        newUser.setRole(Role.USER);
+        newUser.setUserRole(UserRole.USER);
         EntityModel<User> entityModel = assembler.toModel(repository.save(newUser));
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
@@ -42,7 +42,7 @@ public class UserController {
     }
     @PostMapping("/admin")
     ResponseEntity<?> newAdmin(@RequestBody User newUser){
-        newUser.setRole(Role.ADMIN);
+        newUser.setUserRole(UserRole.ADMIN);
         EntityModel<User> entityModel = assembler.toModel(repository.save(newUser));
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
@@ -62,7 +62,7 @@ public class UserController {
         User updatedUser = repository.findById(id)
                 .map(user -> {
                     user.setUsername(newUser.getUsername());
-                    user.setRole(newUser.getRole());
+                    user.setUserRole(newUser.getUserRole());
                     return repository.save(user);
                 })
                 .orElseGet(() -> {
