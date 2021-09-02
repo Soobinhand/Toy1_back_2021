@@ -22,7 +22,7 @@ class ToMeApplicationTests {
     @Test
     public void contextLoads() {
         System.out.println("아니 왜 안 돼!!! 나는 개멍청이..?");
-        User user = User.builder().name("test").password("test").email("test").build();
+        User user = User.builder().name("test").phone("010").username("test").password("test").build();
         Question question = Question.builder().content("test 질문").user(user).build();
         Answer answer = Answer.builder().content("대답 테스트").question(question).user(user).build();
 
