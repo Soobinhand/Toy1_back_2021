@@ -4,6 +4,7 @@ import com.lookie.toy1_back.tome.assembler.UserModelAssembler;
 import com.lookie.toy1_back.tome.domain.User;
 import com.lookie.toy1_back.tome.exception.UserNotFoundException;
 import com.lookie.toy1_back.tome.repository.UserRepository;
+import com.lookie.toy1_back.tome.role.Role;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -33,11 +34,21 @@ public class UserController {
 
     @PostMapping("/users")
     ResponseEntity<?> newUser(@RequestBody User newUser){
+        newUser.setRole(Role.USER);
         EntityModel<User> entityModel = assembler.toModel(repository.save(newUser));
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
     }
+    @PostMapping("/admin")
+    ResponseEntity<?> newAdmin(@RequestBody User newUser){
+        newUser.setRole(Role.ADMIN);
+        EntityModel<User> entityModel = assembler.toModel(repository.save(newUser));
+        return ResponseEntity
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(entityModel);
+    }
+
 
     @GetMapping("/users/{id}")
     public EntityModel<User> one(@PathVariable Long id){
