@@ -1,6 +1,7 @@
 package com.lookie.toy1_back.tome.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.lookie.toy1_back.tome.role.Role;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,16 +24,20 @@ public class User {
     private String phone;
     private String username;
     private String password;
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
 
-    public User(String name, String phone, String username, String password, String role){
+    public User(String name, String phone, String username, String password, Role role){
         this.name = name;
         this.phone = phone;
         this.username = username;
         this.password = password;
         this.role = role;
     }
+
+
+
     @Override
     public boolean equals(Object o){
         if (this == o){
