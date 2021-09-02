@@ -10,6 +10,8 @@ import org.apache.catalina.Store;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -23,4 +25,18 @@ public class UserService {
         BeanUtils.copyProperties(request, user);
         return userRepository.save(user);
     }
+
+    public Optional<User> read(Long id) {
+        return userRepository.findById(id);
+    }
+
+    public User update(Long id) {
+        User user = read(id).get();
+        return userRepository.save(user);
+    }
+
+    public void delete(Long id){
+        userRepository.deleteById(id);
+    }
+
 }

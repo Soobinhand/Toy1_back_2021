@@ -1,15 +1,14 @@
 package com.lookie.toy1_back.tome.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
-@Table
+@Getter
+@Setter
+@Table(name = "tome_user")
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,9 +23,14 @@ public class User implements Serializable {
     private String name;
 
     @Column
+    private String phone;
+
+    @Column
+    private String username;
+
+    @Column
     @JsonIgnore
     private String password;
 
-    @Column
-    private String email;
+
 }

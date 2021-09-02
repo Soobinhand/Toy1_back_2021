@@ -5,10 +5,7 @@ import com.lookie.toy1_back.tome.request.UserCreationRequest;
 import com.lookie.toy1_back.tome.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -20,4 +17,15 @@ public class UserController {
     public ResponseEntity<User> createUser (@RequestBody UserCreationRequest request) {
         return ResponseEntity.ok(userService.createUser(request));
     }
+
+    @GetMapping("/update")
+    public ResponseEntity<User> read(@RequestParam Long id){
+        return ResponseEntity.ok().body(userService.update(id));
+    }
+    @DeleteMapping("/delete/{id}")
+    public void delete(@PathVariable Long id){
+        userService.delete(id);
+    }
+
+
 }
