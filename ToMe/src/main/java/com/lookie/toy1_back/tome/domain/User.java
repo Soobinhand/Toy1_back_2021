@@ -2,11 +2,15 @@ package com.lookie.toy1_back.tome.domain;
 
 import com.lookie.toy1_back.tome.role.UserRole;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -17,7 +21,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Data
 @Builder
-public class User {
+public class User implements Serializable {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
 
@@ -33,19 +37,28 @@ public class User {
 
     @NotBlank(message = "비밀번호를 입력해주세요.")
     @Size(min = 8, max = 20, message = "비밀번호는 8자 이상 20자 이하로 입력해주세요.")
+    @JsonIgnore
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Question> questionList = new ArrayList<Question>();;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Answer> answerList = new ArrayList<Answer>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserRole userRole;
+    private UserRole role;
 
     @Builder
-    public User(String name, String phone, String username, String password, UserRole userRole){
+    public User(String name, String phone, String username, String password, UserRole role){
         this.name = name;
         this.phone = phone;
         this.username = username;
         this.password = password;
-        this.userRole = userRole;
+        this.role = role;
     }
 
 
