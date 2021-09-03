@@ -4,6 +4,9 @@ import com.lookie.toy1_back.tome.role.UserRole;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Getter
@@ -17,10 +20,21 @@ import java.util.Objects;
 public class User {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
+
     private String name;
+
+    @NotBlank(message = "휴대폰 번호를 입력해주세요.")
+    @Pattern(regexp = "(01[016789])(\\d{3,4})(\\d{4})",message = "-를 생략하고 입력해주세요.")
     private String phone;
+    
+    @NotBlank(message = "아이디를 입력해주세요.")
+    @Size(min = 2, max = 10, message = "아이디는 2자 이상 10자 이하로 입력해주세요.")
     private String username;
+
+    @NotBlank(message = "비밀번호를 입력해주세요.")
+    @Size(min = 8, max = 20, message = "비밀번호는 8자 이상 20자 이하로 입력해주세요.")
     private String password;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole userRole;

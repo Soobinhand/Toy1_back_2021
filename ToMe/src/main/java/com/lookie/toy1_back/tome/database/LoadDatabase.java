@@ -15,8 +15,8 @@ class LoadDatabase {
     @Bean
     CommandLineRunner initDatabase(UserRepository repository){
         return args -> {
-            log.info("ex" + repository.save(new User("a","a","a","a", UserRole.USER)));
-            log.info("ex" + repository.save(new User("b","b","b","b", UserRole.ADMIN)));
+            log.info("ex" + repository.save(new User("a","01012345678","soobin","clfclf77", UserRole.USER)));
+            log.info("ex" + repository.save(new User("b","01012345678","yujin","clfclf77", UserRole.ADMIN)));
         };
     }
 }
