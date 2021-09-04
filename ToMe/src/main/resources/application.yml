@@ -1,19 +1,19 @@
 spring:
-  batch:
-    job:
-      enabled: false
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    dherokuriver-class-name: com.mysql.cj.jdbc.Driver
     url: "jdbc:mysql://localhost:3306/tome"
     username: root
     password: 1234
-
-
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
 
+jwt:
+  secret: govlepel@$&
+
+server:
+  port=${PORT:32500}:
 
 
 

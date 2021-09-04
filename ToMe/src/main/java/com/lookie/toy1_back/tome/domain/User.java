@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-@Table
+@Table(name = "tome_member")
 @Entity
 @ToString
 @NoArgsConstructor

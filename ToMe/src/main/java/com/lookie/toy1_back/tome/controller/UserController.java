@@ -11,14 +11,12 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +36,7 @@ public class UserController {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
-
+    //완료
     @GetMapping("/users")
     public CollectionModel<EntityModel<User>> all(){
         List<EntityModel<User>> users = repository.findAll().stream()
@@ -46,11 +44,12 @@ public class UserController {
                 .collect(Collectors.toList());
         return CollectionModel.of(users, linkTo(methodOn(UserController.class).all()).withSelfRel());
     }
-
+    
+    //완료
     @PostMapping("/signup/user")
     ResponseEntity<?> newUser(@Valid @RequestBody User newUser){
         checkUserNameDuplicate(newUser.getUsername());
-        newUser.setRole(UserRole.USER);
+        newUser.setRole(UserRole.ROLE_USER);
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         EntityModel<User> entityModel = assembler.toModel(repository.save(newUser));
         return ResponseEntity
@@ -58,11 +57,11 @@ public class UserController {
                 .body(entityModel);
     }
 
-
+    //완료
     @PostMapping("/signup/admin")
     ResponseEntity<?> newAdmin(@Valid @RequestBody User newUser){
         checkUserNameDuplicate(newUser.getUsername());
-        newUser.setRole(UserRole.ADMIN);
+        newUser.setRole(UserRole.ROLE_ADMIN);
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         EntityModel<User> entityModel = assembler.toModel(repository.save(newUser));
         return ResponseEntity
@@ -71,9 +70,11 @@ public class UserController {
     }
 
 
-    // 로그인
+    // 로그인 완료
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody User user, HttpServletResponse response) {
+    public String login(@RequestBody User user, HttpServletResponse response, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+
         // 유저 존재 확인
         User member = userService.findUser(user);
         boolean checkResult = userService.checkPassword(member, user);
@@ -84,11 +85,19 @@ public class UserController {
         // 토큰 생성 및 응답
         String token = jwtTokenProvider.createToken(member.getUsername(), member.getRole());
         response.setHeader("authorization", "bearer " + token);
-        return ResponseEntity.ok().body("로그인 성공!");
+
+        return jwtTokenProvider.createToken(member.getUsername(), member.getRole());
 
     }
 
+    //완료
+    @PostMapping("/logout")
+    public static void logout(HttpServletRequest request) {
+        request.getSession().invalidate();
+        request.getSession(true);
+    }
 
+    //완료
     @GetMapping("/user/{id}")
     public EntityModel<User> one(@PathVariable Long id){
         User user = repository.findById(id)
@@ -114,14 +123,12 @@ public class UserController {
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
     }
-
+    //완료
     @DeleteMapping("/user/{id}")
     ResponseEntity<?> deleteUser(@PathVariable Long id){
         repository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-
-
 
     public void checkUserNameDuplicate(String username) {
         List<User> user = repository.findAll();

@@ -1,6 +1,7 @@
 package com.lookie.toy1_back.tome.config;
 
 import com.lookie.toy1_back.tome.role.UserRole;
+import com.lookie.toy1_back.tome.service.CustomUserDetailService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -23,48 +24,54 @@ import java.util.List;
 @Component
 public class JwtTokenProvider {
 
-    @Value("spring.jwt.secret")
-    private String secretKey;
+    // 키
+    private String secretKey = "lalala";
 
-    private long tokenValidMilisecond = 1000L * 60 * 60; // 1시간만 토큰 유효
+    // 토큰 유효시간 | 30min
+    private long tokenValidTime = 30 * 60 * 1000L;
 
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailService customUserDetailService;
 
+    // 의존성 주입 후, 초기화를 수행
+    // 객체 초기화, secretKey를 Base64로 인코딩한다.
     @PostConstruct
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    //Jwt 토큰 생성
-    public String createToken(String userPk, UserRole role) {
-        Claims claims = Jwts.claims().setSubject(userPk);
-        claims.put("roles", role);
-        Date now = new Date();
+    // JWT Token 생성.
+    public String createToken(String username, UserRole roles){
+        Claims claims = Jwts.claims().setSubject(username); // claims 생성 및 payload 설정
+        claims.put("roles", roles); // 권한 설정, key/ value 쌍으로 저장
+
+        Date date = new Date();
         return Jwts.builder()
-                .setClaims(claims) // 데이터
-                .setIssuedAt(now) // 발행일자
-                .setExpiration(new Date(now.getTime() + tokenValidMilisecond)) // Exprie Time 설정
-                .signWith(SignatureAlgorithm.HS256, secretKey) // 암호화 알고리즘 적용
-                .compact();
+                .setClaims(claims) // 발행 유저 정보 저장
+                .setIssuedAt(date) // 발행 시간 저장
+                .setExpiration(new Date(date.getTime() + tokenValidTime)) // 토큰 유효 시간 저장
+                .signWith(SignatureAlgorithm.HS256, secretKey) // 해싱 알고리즘 및 키 설정
+                .compact(); // 생성
     }
 
-    //Jwt 토큰으로 인증 정보 조회
+    // JWT 토큰에서 인증 정보 조회
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(token));
+        UserDetails userDetails = customUserDetailService.loadUserByUsername(this.getUsername(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    // Jwt 토큰에서 회원 구별 정보 추출
-    public String getUserPk(String token) {
+    // 토큰에서 회원 정보 추출
+    public String getUsername(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
-    // Request의 Header에서 token 파싱 : "X-AUTH-TOKEN: jwt토큰"
-    public String resolveToken(HttpServletRequest req) {
-        return req.getHeader("X-AUTH-TOKEN");
+    // Request의 Header에서 token 값을 가져옵니다. "authorization" : "token'
+    public String resolveToken(HttpServletRequest request) {
+        if(request.getHeader("authorization") != null )
+            return request.getHeader("authorization").substring(7);
+        return null;
     }
 
-    // Jwt 토큰의 유효성 + 만료일자 확인
+    // 토큰의 유효성 + 만료일자 확인
     public boolean validateToken(String jwtToken) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);

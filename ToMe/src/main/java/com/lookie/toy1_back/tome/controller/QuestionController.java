@@ -30,22 +30,23 @@ public class QuestionController {
     private final AnswerRepository answerRepository;
 
     private final UserRepository userRepository;
-
+    
+    //완료
     @GetMapping("")
     public ResponseEntity<?> getQuestions(){
         return ResponseEntity.ok(questionRepository.findAll());
     }
-
+    //완료
     @PostMapping("")
     public ResponseEntity<Question> createQuestion (@RequestBody QuestionCreateRequest request) {
         return ResponseEntity.ok(questionService.createQuestion(request));
     }
-
+    //완료
     @GetMapping("/{questionId}")
     public ResponseEntity<?> getQuestion(@PathVariable Long questionId) {
         return ResponseEntity.ok(questionRepository.findById(questionId));
     }
-
+    //완료
     @DeleteMapping("/{questionId}")
     public ResponseEntity<Void> deleteQuestion (@PathVariable Long questionId) {
         questionService.deleteQuestion(questionId);
@@ -57,22 +58,22 @@ public class QuestionController {
         questionService.updateQuestion(questionId, request);
         return ResponseEntity.ok().build();
     }
-
+    //완료
     @GetMapping("/answer")
     public ResponseEntity<?> getAnswers(){
         return ResponseEntity.ok(answerRepository.findAll());
     }
-
+    //완료
     @PostMapping("/{questionId}/answer")
     public ResponseEntity<Answer> createAnswer (@PathVariable Long questionId, @RequestBody AnswerCreateRequest request) {
         return ResponseEntity.ok(answerService.createAnswer(questionId, request));
     }
-
+    //완료
     @GetMapping("/{questionId}/answer/{answerId}")
     public ResponseEntity<?> getAnswer (@PathVariable Long questionId,@PathVariable Long answerId) {
         return ResponseEntity.ok(questionRepository.getById(questionId).getAnswerList().get(Math.toIntExact(answerId)-1));
     }
-
+    //완료
     @DeleteMapping("/{questionId}/answer/{answerId}")
     public ResponseEntity<Void> deleteAnswer (@PathVariable Long answerId) {
         answerService.deleteAnswer(answerId);

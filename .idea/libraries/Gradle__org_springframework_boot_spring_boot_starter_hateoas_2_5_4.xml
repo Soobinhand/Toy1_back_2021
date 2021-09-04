@@ -1,11 +1,11 @@
 <component name="libraryTable">
-  <library name="Gradle: io.swagger:swagger-models:1.5.20">
+  <library name="Gradle: org.hibernate.validator:hibernate-validator:6.2.0.Final">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.swagger/swagger-models/1.5.20/fb3a23bad80c5ed84db9dd150db2cba699531458/swagger-models-1.5.20.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hibernate.validator/hibernate-validator/6.2.0.Final/d6b0760dfffbf379cedd02f715ff4c9a2e215921/hibernate-validator-6.2.0.Final.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.swagger/swagger-models/1.5.20/645ed024a639bba92570cde6d93b87b575a6b58e/swagger-models-1.5.20-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hibernate.validator/hibernate-validator/6.2.0.Final/3da5ee083a02f32cfcb0664677288c48f35c384c/hibernate-validator-6.2.0.Final-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

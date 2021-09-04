@@ -38,7 +38,7 @@ public class QuestionService {
 
         User user = userForId.get();
 
-        if (user.getRole() != UserRole.ADMIN) {
+        if (user.getRole() != UserRole.ROLE_ADMIN) {
             throw new RuntimeException("어드민 계정만 접근 가능합니다.");
         }
 
