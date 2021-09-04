@@ -1,43 +1,52 @@
 package com.lookie.toy1_back.tome.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lookie.toy1_back.tome.role.UserRole;
 import lombok.*;
-import net.minidev.json.annotate.JsonIgnore;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
-@Table(name = "tome_user")
+@Table
 @Entity
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
 public class User implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long u_num;
 
-    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
-
+    @NotBlank(message = "이름을 입력해주세요.")
+    @Column
     private String name;
 
     @NotBlank(message = "휴대폰 번호를 입력해주세요.")
-    @Pattern(regexp = "(01[016789])(\\d{3,4})(\\d{4})",message = "-를 생략하고 입력해주세요.")
+    @Column
     private String phone;
-    
-    @NotBlank(message = "아이디를 입력해주세요.")
-    @Size(min = 2, max = 10, message = "아이디는 2자 이상 10자 이하로 입력해주세요.")
+
+    @NotBlank(message = "ID를 입력해주세요.")
+    @Column
     private String username;
 
+    // @Pattern(regexp="(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,20}", message = "비밀번호는 영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 8자 ~ 20자의 비밀번호여야 합니다.")
     @NotBlank(message = "비밀번호를 입력해주세요.")
-    @Size(min = 8, max = 20, message = "비밀번호는 8자 이상 20자 이하로 입력해주세요.")
-    @JsonIgnore
+    @Column
     private String password;
 
     @OneToMany(mappedBy = "user")
@@ -49,10 +58,8 @@ public class User implements Serializable {
     private List<Answer> answerList = new ArrayList<Answer>();
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private UserRole role;
 
-    @Builder
     public User(String name, String phone, String username, String password, UserRole role){
         this.name = name;
         this.phone = phone;
@@ -60,8 +67,6 @@ public class User implements Serializable {
         this.password = password;
         this.role = role;
     }
-
-
 
     @Override
     public boolean equals(Object o){
@@ -72,7 +77,7 @@ public class User implements Serializable {
             return false;
         }
         User user = (User) o;
-        return Objects.equals(this.id, user.id) &&
+        return Objects.equals(this.u_num, user.u_num) &&
                 Objects.equals(this.name, user.name) &&
                 Objects.equals(this.phone, user.phone) &&
                 Objects.equals(this.username, user.username) &&
@@ -82,9 +87,7 @@ public class User implements Serializable {
 
     @Override
     public int hashCode(){
-        return Objects.hash(this.id, this.name, this.phone,
+        return Objects.hash(this.u_num, this.name, this.phone,
                 this.username, this.password);
     }
-
-
 }

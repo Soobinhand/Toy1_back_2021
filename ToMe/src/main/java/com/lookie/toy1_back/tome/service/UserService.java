@@ -7,9 +7,11 @@ import com.lookie.toy1_back.tome.repository.QuestionRepository;
 import com.lookie.toy1_back.tome.repository.UserRepository;
 import com.lookie.toy1_back.tome.request.QuestionCreateRequest;
 import com.lookie.toy1_back.tome.request.UserCreateRequest;
+import com.lookie.toy1_back.tome.role.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.Store;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -24,23 +26,41 @@ public class UserService {
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
 
-/*    public User createUser(UserCreateRequest user) {
-        User userToCreate = new User();
-        BeanUtils.copyProperties(user, userToCreate);
-        return userRepository.save(userToCreate);
-    }*/
+    private final PasswordEncoder passwordEncoder;
 
-    public int userCheck(String username,String password){
-        int check = -1;
-        User user = userRepository.findByUsername(username);
-        if (user != null){
-            if (password.equals(user.getPassword())){
-                check=1;
-            }else check=0;
-
-        }
-        return check;
+    public Long joinUser(User user) {
+        Long userId = userRepository.save(
+                User.builder()
+                        .username(user.getUsername())
+                        .password(passwordEncoder.encode(user.getPassword()))
+                        .role(UserRole.USER)
+                        .phone(user.getPhone())
+                        .name(user.getName())
+                        .build())
+                .getU_num();
+        return userId;
     }
 
+    public Long joinAdmin(User user) {
+        Long userId = userRepository.save(
+                User.builder()
+                        .username(user.getUsername())
+                        .password(passwordEncoder.encode(user.getPassword()))
+                        .role(UserRole.ADMIN)
+                        .phone(user.getPhone())
+                        .name(user.getName())
+                        .build())
+                .getU_num();
+        return userId;
+    }
 
+    public User findUser(User user) {
+        User member = userRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("아이디 혹은 비밀번호가 잘못되었습니다."));
+        return member;
+    }
+
+    public boolean checkPassword(User member, User user) {
+        return passwordEncoder.matches(user.getPassword(), member.getPassword());
+    }
 }
