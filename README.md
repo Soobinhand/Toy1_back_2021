@@ -23,11 +23,11 @@
 ### 기술 스택
 | |Frontend|Backend|
 |---|--------|-------|
-|IDE| |IntelliJ|
-|Framework| |Spring Boot|
-|Build| |Gradle|
+|IDE|Android studio|IntelliJ|
+|Framework|Jetpack , KTX , Ktor client|Spring Boot|
+|Build|Gradle|Gradle|
 |Language|Kotlin|Java|
-|DB| |MySQL|
+|DB|SharedPreference|MySQL|
 |API Platform| |Postman|
 |Deploy| |AWS|
 
